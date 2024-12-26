@@ -20,7 +20,6 @@ class MyCovertChannel(CovertChannelBase):
 
         for bit in binary_message:
             mode = 7 if bit == '.' else int(bit)  # Use mode 7 for the breaker, otherwise the bit value
-            print(f"Sending mode: {mode}")
             packet = self.create_ntp_packet(mode)
             self.send_ntp_packet(ntp_server, port, packet)
 
@@ -34,7 +33,6 @@ class MyCovertChannel(CovertChannelBase):
         def packet_callback(packet):
             if packet.haslayer(UDP) and packet[UDP].sport == parameter2:
                 mode = self.extract_mode_from_packet(bytes(packet[UDP].payload))
-                print(f"Received mode: {mode}")
                 received_message.append(str(mode))  # Add mode to received message
                 if mode == 7:  # Stop when breaker mode is detected
                     self.stop_sniffing = True  # Set flag to stop sniffing
@@ -46,8 +44,7 @@ class MyCovertChannel(CovertChannelBase):
         sniff(
             filter=sniff_filter,
             prn=packet_callback,
-            stop_filter=lambda _: self.stop_sniffing,  # Stop based on the flag
-            #timeout=10  # Optional timeout for safety
+            stop_filter=lambda _: self.stop_sniffing  # Stop based on the flag
         )
 
         # Decode the received message, removing the breaker '7' if present
