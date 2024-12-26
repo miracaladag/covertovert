@@ -14,12 +14,13 @@ class MyCovertChannel(CovertChannelBase):
         binary_message = self.generate_random_binary_message_with_logging(log_file_name)
         binary_message += '.'  # Append '.' as a breaker to signal the end of communication
 
-        # Use parameter1 as server address and parameter2 as port if specified
+        # Use parameter1 as server address and parameter2 as port
         ntp_server = parameter1
         port = parameter2
 
         for bit in binary_message:
             mode = 7 if bit == '.' else int(bit)  # Use mode 7 for the breaker, otherwise the bit value
+            print(f"Sending mode: {mode}")
             packet = self.create_ntp_packet(mode)
             self.send_ntp_packet(ntp_server, port, packet)
 
@@ -33,6 +34,7 @@ class MyCovertChannel(CovertChannelBase):
         def packet_callback(packet):
             if packet.haslayer(UDP) and packet[UDP].sport == parameter2:
                 mode = self.extract_mode_from_packet(bytes(packet[UDP].payload))
+                print(f"Received mode: {mode}")
                 received_message.append(str(mode))  # Add mode to received message
                 if mode == 7:  # Stop when breaker mode is detected
                     self.stop_sniffing = True  # Set flag to stop sniffing
@@ -71,7 +73,7 @@ class MyCovertChannel(CovertChannelBase):
         Send an NTP packet to the specified server and port using the provided send function.
         """
         ip = IP(dst=ntp_server)
-        udp = UDP(sport=123, dport=port)
+        udp = UDP(sport=port, dport=port)
         raw = Raw(load=packet)
         CovertChannelBase.send(self, ip/udp/raw)
 
