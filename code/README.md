@@ -96,11 +96,5 @@
  3. **Traffic Analysis**:
     - Unusual patterns in NTP traffic, such as excessive Mode field manipulation, might be detected with advanced monitoring tools.
 
- ### Next Steps
- - Explore additional protocol fields or other layers for covert channel implementation.
- - Improve the packet sending mechanism to enhance throughput and reduce latency.
- - Test the implementation under real-world conditions with higher traffic volumes.
-
  ### Contributors
- - **Your Name**: Implementation and testing
- - **[Your Team Name]**
+ - **Miraç Aladağ, Selim Tarık Arı**
