@@ -1,4 +1,4 @@
- # README for Protocol Field Manipulation using the Mode Field in NTP
+ # Protocol Field Manipulation using the Mode Field in NTP
 
  ## Project Overview
 
