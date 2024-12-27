@@ -1,6 +1,6 @@
- ## Protocol Field Manipulation using the Mode Field in NTP
+ # README for Protocol Field Manipulation using the Mode Field in NTP
 
- ### Project Overview
+ ## Project Overview
 
  This project implements a **covert channel** using the **Mode field in the Network Time Protocol (NTP)**.
  A covert channel transmits data stealthily by exploiting protocol fields not typically monitored or used
@@ -9,7 +9,7 @@
 
  The project achieves a covert channel capacity of **9.33 bps**, demonstrating its effectiveness under test conditions.
 
- ### Key Features
+ ## Key Features
  - **Message Encoding and Decoding**:
    - The sender encodes a binary message into the Mode field of NTP packets.
    - The receiver extracts and reconstructs the binary message by reading the Mode field.
@@ -22,13 +22,39 @@
  - **Verification**:
    - Logs are generated to compare the sent and received messages for accuracy.
 
- ### Requirements
+ ## Requirements
  - **Python Version**: 3.10
  - **Dependencies**:
    - `scapy`: For packet crafting and sniffing.
    - `struct`: For low-level manipulation of protocol fields.
 
- ### Configuration
+ ## Parameter Limitations
+ - **No Timeout or Delay**:
+   - The code sends and receives packets as fast as possible, with no enforced delays or timeouts between packets.
+ - **Message Length**:
+   - There is no upper limit for message length. During capacity measurement, the binary message is fixed at 128 bits (16 characters).
+ - **Packet Loss**:
+   - Packet loss is not handled. The implementation assumes reliable delivery of packets between sender and receiver.
+
+ ## Encoding and Decoding
+
+ ### Encoding:
+ 1. Each bit of the binary message is encoded into the **Mode field** of NTP packets:
+    - `Mode = 0`: Represents binary `0`.
+    - `Mode = 1`: Represents binary `1`.
+    - `Mode = 7`: Represents the breaker, denoting the end of the message (encoded from the `.` character).
+ 2. The crafted NTP packet is constructed using the following logic:
+    - The Mode field occupies the last 3 bits of the first byte of the NTP packet.
+    - The rest of the packet is padded with zeroes to maintain the correct structure.
+
+ ### Decoding:
+ 1. The receiver listens for incoming NTP packets on a specified port and extracts the Mode field:
+    - The Mode field is decoded by extracting the last 3 bits of the first byte from the packet payload.
+ 2. The binary message is reconstructed by appending the values (`0`, `1`) decoded from the Mode field.
+ 3. The receiver stops decoding when the breaker value (`7`) is detected.
+ 4. The resulting binary message is converted into text by mapping every 8 bits back into their corresponding ASCII characters.
+
+ ## Configuration
  Modify the `config.json` file to update the sender and receiver parameters:
  ```json
  {
@@ -51,9 +77,9 @@
  }
  ```
 
- ### Instructions
+ ## Instructions
 
- #### Running the Covert Channel
+ ### Running the Covert Channel
  1. **Set Up**:
     - Ensure the testing environment is configured with the `config.json` file.
     - Start the sender and receiver on separate containers or processes.
@@ -73,7 +99,7 @@
  4. **Verify the Logs**:
     - Compare `Sender.log` and `Receiver.log` to confirm message integrity.
 
- #### Measuring Covert Channel Capacity
+ ### Measuring Covert Channel Capacity
  Use the `measure_capacity` function to calculate the covert channel capacity:
  - Send a 128-bit message and measure the time taken.
  - Compute the capacity using:
@@ -84,17 +110,14 @@
  **Observed Capacity**:
  - **9.33 bps** when tested in a local environment with `172.18.0.3` as the destination.
 
- ### Results
+ ## Results
  - **Message Integrity**: The sent and received messages matched exactly in all tests.
  - **Capacity**: Achieved a covert channel capacity of 9.33 bps.
 
- ### Limitations
- 1. **Latency**:
-    - Delays in the network may lower the covert channel capacity.
- 2. **Packet Loss**:
-    - If packets are dropped during transmission, the receiver may not reconstruct the message accurately.
- 3. **Traffic Analysis**:
-    - Unusual patterns in NTP traffic, such as excessive Mode field manipulation, might be detected with advanced monitoring tools.
+ ## Limitations
+ 1. **No Timeout or Delay**:
+    - The implementation does not introduce any delays between packet transmissions.
 
- ### Contributors
+
+ ## Contributors
  - **Miraç Aladağ, Selim Tarık Arı**
