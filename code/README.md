@@ -102,10 +102,7 @@
  ### Measuring Covert Channel Capacity
  Use the `measure_capacity` function to calculate the covert channel capacity:
  - Send a 128-bit message and measure the time taken.
- - Compute the capacity using:
-   \[
-   \text{Capacity (bps)} = \frac{\text{Message Length (bits)}}{\text{Time Taken (seconds)}}
-   \]
+ - Compute the capacity using: Capacity (bps) = Message Length (bits) / Time Taken (seconds)
 
  **Observed Capacity**:
  - **9.33 bps** when tested in a local environment with `172.18.0.3` as the destination.
